@@ -1,0 +1,1 @@
+This is meant to be a learning exercise in Git, Layout, Adapters, AsyncTasks, etc
