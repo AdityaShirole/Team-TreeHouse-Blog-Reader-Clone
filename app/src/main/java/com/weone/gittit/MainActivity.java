@@ -2,8 +2,10 @@ package com.weone.gittit;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -45,6 +50,8 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class MainActivity extends ActionBarActivity {
 
+    public static final String KEY_TITLE ="title";
+    public static final String KEY_AUTHOR ="author";
 
     protected static final String TAG = MainActivity.class.getSimpleName();
     protected int NUMBER_OF_POSTS = 20;
@@ -60,6 +67,23 @@ public class MainActivity extends ActionBarActivity {
 
         TextView mEmptyTextView = (TextView)findViewById(android.R.id.empty);
         mBlogList = (ListView)findViewById(R.id.blog_list);
+
+        mBlogList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    JSONArray jsonPosts = mBlogData.getJSONArray("posts");
+                    JSONObject jsonPost = jsonPosts.getJSONObject(position);
+                    String blogUrl = jsonPost.getString("url");
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(blogUrl));
+                    startActivity(intent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,20 +127,34 @@ public class MainActivity extends ActionBarActivity {
         else {
             try {
                 JSONArray jsonPosts = mBlogData.getJSONArray("posts");
-                mBlogPostTitles = new String[jsonPosts.length()];
+                //mBlogPostTitles = new String[jsonPosts.length()];
+
+                ArrayList<HashMap<String,String>> blogPosts =
+                        new ArrayList< HashMap<String,String> >();
+
 
                 for(int i=0; i< jsonPosts.length(); i++) {
                     JSONObject jsonPost = jsonPosts.getJSONObject(i);
-                    String title = jsonPost.getString("title");
+                    String title = jsonPost.getString(KEY_TITLE);
                     title = Html.fromHtml(title).toString();
-                    mBlogPostTitles[i] = title;
+                    String author = jsonPost.getString(KEY_AUTHOR);
+                    author = Html.fromHtml(author).toString();
+                    HashMap<String,String> blogPost = new HashMap<String,String>();
+                    blogPost.put(KEY_TITLE,title);
+                    blogPost.put(KEY_AUTHOR,author);
+
+                    blogPosts.add(blogPost);
+                    //mBlogPostTitles[i] = title;
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                        MainActivity.this,
-                        android.R.layout.simple_list_item_1,
-                        mBlogPostTitles
-                        );
+
+                String[] keys = {KEY_TITLE, KEY_AUTHOR};
+                int[] ids = {android.R.id.text1, android.R.id.text2};
+                SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
+                        blogPosts,
+                        android.R.layout.simple_list_item_2,
+                        keys,
+                        ids);
                 mBlogList.setAdapter(adapter);
 
                 Log.i(TAG,mBlogData.toString(2));
@@ -183,6 +221,7 @@ public class MainActivity extends ActionBarActivity {
             updateList();
         }
     }
+
 
 
     @Override
