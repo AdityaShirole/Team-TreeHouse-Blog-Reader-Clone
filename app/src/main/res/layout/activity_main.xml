@@ -22,7 +22,8 @@
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No items to display."/>
+        android:text="No items to display."
+        android:visibility="invisible"/>
 
 
 

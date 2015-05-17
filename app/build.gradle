@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.weone.gittit"
-        minSdkVersion 14
+        minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,6 @@ dependencies {
         // exclusion is not necessary, but generally a good idea.
         exclude group: 'com.google.android', module: 'support-v4'
     }
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

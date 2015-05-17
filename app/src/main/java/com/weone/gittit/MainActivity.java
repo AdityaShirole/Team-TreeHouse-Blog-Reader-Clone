@@ -139,23 +139,25 @@ public class MainActivity extends ActionBarActivity {
                     title = Html.fromHtml(title).toString();
                     String author = jsonPost.getString(KEY_AUTHOR);
                     author = Html.fromHtml(author).toString();
+                    String thumbnail = jsonPost.getString("thumbnail");
+                    thumbnail = Html.fromHtml(thumbnail).toString();
+                    String url = jsonPost.getString("url");
+                    url = Html.fromHtml(url).toString();
+
+
                     HashMap<String,String> blogPost = new HashMap<String,String>();
+
                     blogPost.put(KEY_TITLE,title);
                     blogPost.put(KEY_AUTHOR,author);
-
+                    blogPost.put("thumbnail",thumbnail);
+                    blogPost.put("url",url);
                     blogPosts.add(blogPost);
-                    //mBlogPostTitles[i] = title;
+
                 }
 
 
-                String[] keys = {KEY_TITLE, KEY_AUTHOR};
-                int[] ids = {android.R.id.text1, android.R.id.text2};
-                SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
-                        blogPosts,
-                        android.R.layout.simple_list_item_2,
-                        keys,
-                        ids);
-                mBlogList.setAdapter(adapter);
+                PostAdapter postAdapter = new PostAdapter(MainActivity.this,blogPosts);
+                mBlogList.setAdapter(postAdapter);
 
                 Log.i(TAG,mBlogData.toString(2));
             } catch (JSONException e) {
